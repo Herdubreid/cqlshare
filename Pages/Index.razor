@@ -1,0 +1,25 @@
+﻿@page "/"
+@inherits AppStateComponent
+@inject JsService Js
+
+<div class="row m-2 p-4 font-mono border rounded"
+     style="height:40vh" id="cql-edit"></div>
+<div class="row">
+    <div class="col-auto">
+        <button class="btn btn-success" disabled="@(!CanSubmit || AppState.Busy)"
+                @onclick="@(() => Mediator.Send(new AppState.SubmitQueryAction()))">Submit</button>
+    </div>
+    <div class="col text-danger">@AppState.ParseError</div>
+</div>
+
+@code {
+    bool CanSubmit => !string.IsNullOrWhiteSpace(AppState.Query) && string.IsNullOrEmpty(AppState.ParseError);
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+            Js.InitEditor("cql", string.Empty);
+        }
+    }
+}

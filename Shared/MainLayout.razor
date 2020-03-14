@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+
+@if (Loaded)
+{
+    <NavMenu />
+    <main class="container">
+        <div class="row no-gutters">
+            <div class="col-4">
+                <QueryResponseList></QueryResponseList>
+            </div>
+            <div class="col">
+                @Body
+                <UserEditList></UserEditList>
+            </div>
+        </div>
+    </main>
+}
+else
+{
+    <div class="d-flex vh-100">
+        <div class="d-flex vw-100 align-items-center justify-content-center">
+            <div>
+                <i class="fas fa-spinner fa-spin"></i>
+                <em> Loading...</em>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    bool Loaded { get; set; }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Loaded = true;
+            StateHasChanged();
+        }
+        base.OnAfterRender(firstRender);
+    }
+}

@@ -1,0 +1,44 @@
+﻿@inherits AppStateComponent
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="">CQL Share</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent">
+        <i class="fas fa-hamburger"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+        <div class="row align-items-center w-100">
+            <div class="col-auto">
+                <i class="far fa-clock fa-lg text-light"></i>
+                <span class="badge badge-info">@Elapsed.Minutes mins</span>
+            </div>
+            <div class="col-auto">
+                <i class="fas fa-user fa-lg text-light"></i>
+                <span class="badge badge-info">@(AppState.User.HasValue ? AppState.User.Value.ToString() : string.Empty)</span>
+            </div>
+            <div class="col-auto">
+                <i class="fas fa-users fa-lg text-light"></i>
+                <span class="badge badge-info">@CqlState.Users.Count()</span>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    TimeSpan Elapsed { get; set; }
+    DateTime Started { get; set; }
+    System.Timers.Timer EveryMinute;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Started = DateTime.Now;
+        EveryMinute = new System.Timers.Timer(60000);
+        EveryMinute.Elapsed += ((Object source, System.Timers.ElapsedEventArgs args) =>
+        {
+            Elapsed = DateTime.Now - Started;
+            InvokeAsync(StateHasChanged);
+        });
+        EveryMinute.AutoReset = true;
+        EveryMinute.Enabled = true;
+    }
+}

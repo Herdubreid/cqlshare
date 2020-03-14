@@ -1,0 +1,63 @@
+﻿@inherits AppStateComponent
+@inject E1Service E1
+
+<div class="card mt-2">
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush mt-2">
+            @foreach (var rsp in CqlState.QueryResponses.OrderByDescending(e => e.Submitted))
+            {
+                if (@rsp.Busy)
+                {
+                    <div class="list-group-item">
+                        <div class="btn-group-sm">
+                            <div class="btn btn-outline-danger"
+                                @onclick="@(() => Mediator.Send(new AppState.QueryResponseAction { DataAction = DataAction.CANCEL, DataId = rsp.Id }))">
+                                <i class="fa fa-times"></i>
+                            </div>
+                            <div class="btn btn-outline-success"><i class="fas fa-sync fa-spin"></i></div>
+                            <small>@rsp.Title</small>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group-item">
+                        @if (rsp.Count == 0)
+                        {
+                            <div>
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                        @onclick="@(() => Mediator.Send(new AppState.QueryResponseAction { DataAction = DataAction.CLEAR, DataId = rsp.Id }))">
+                                Zero Rows <i class="fa fa-times"></i></button>
+                            </div>
+                        }
+                        else
+                        {
+                    <div class="btn-group-sm">
+                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                @onclick="@(() => Mediator.Send(new AppState.QueryResponseAction { DataAction = DataAction.DELETE, DataId = rsp.Id }))">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-success btn-sm"
+                                disabled="@AppState.Downloading"
+                                @onclick="@(() => Mediator.Send(new AppState.QueryResponseAction { DataAction = DataAction.DOWNLOAD, DataId = rsp.Id }))">
+                            <i class="@($"{(AppState.Downloading ? "fas fa-circle-notch fa-spin" : "far fa-file-excel")}")">
+                                </i> @rsp.Count rows
+                        </button>
+                    </div>
+                        }
+                        <div>
+                            <small>@(rsp.Error == null ? rsp.Title : rsp.Error)</small>
+                        </div>
+                        <div class="font-italic">
+                            <small>@rsp.Environment</small>
+                            <small>@rsp.Submitted.ToLocalTime()</small>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+}

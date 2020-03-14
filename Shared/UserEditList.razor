@@ -1,0 +1,47 @@
+﻿@inherits AppStateComponent
+@implements IDisposable
+@inject JsService Js
+
+<nav class="mt-2">
+    <ul class="pagination">
+        @foreach (var user in CqlState.Users)
+        {
+            if (user.Key != AppState.User)
+            {
+                <li class="page-item @(AppState.ViewUser.HasValue && AppState.ViewUser.Value == user.Key ? "active" : string.Empty)">
+                    <a class="page-link"
+                       @onclick="@(() => Mediator.Send(new AppState.SelectViewUserAction { ViewUser = user.Key }))">@user.Key</a>
+                </li>
+            }
+        }
+    </ul>
+</nav>
+<div class="row m-2 p-4 font-mono"
+     style="height:20vh" id="cql-view"></div>
+
+@code {
+    protected void QueryChanged(object sender, QueryChangedArgs e)
+    {
+        if (e.User == AppState.ViewUser)
+        {
+            Js.SetCqlViewerText("cql", e.Query);
+        }
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender)
+        {
+            Js.InitCqlViewer("cql", string.Empty);
+        }
+    }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CqlState.QueryChanged += QueryChanged;
+    }
+    void IDisposable.Dispose()
+    {
+        CqlState.QueryChanged -= QueryChanged;
+    }
+}

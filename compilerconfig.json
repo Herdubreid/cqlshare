@@ -1,0 +1,9 @@
+﻿[
+  {
+    "outputFile": "wwwroot/Style.css",
+    "inputFile": "Styles/Style.scss",
+    "options": {
+      "relativeUrls": false
+    }
+  }
+]
